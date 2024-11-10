@@ -1,0 +1,56 @@
+/* Styles.css */
+
+/* Sidebar Slide-In Animation */
+.sidebar-animate {
+    transform: translateX(-100%);
+    opacity: 0;
+    animation: sidebarSlideIn 0.6s ease-out forwards;
+}
+
+@keyframes sidebarSlideIn {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Topbar Slide-Down Animation */
+.topbar-animate {
+    transform: translateY(-100%);
+    opacity: 0;
+    animation: topbarSlideIn 0.6s ease-out forwards;
+}
+
+@keyframes topbarSlideIn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Fade-In for Render Page Container */
+.content-fade {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Transition for Changing Tabs in Render Page */
+.content-fade>* {
+    animation: tabFadeTransition 0.5s ease-in-out;
+}
+
+@keyframes tabFadeTransition {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

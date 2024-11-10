@@ -77,3 +77,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - npm install react-icons
 - npm install firebase
 - npm install sweetalert2
+- npm install react-spinners

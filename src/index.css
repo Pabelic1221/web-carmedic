@@ -19,6 +19,45 @@ code {
     monospace;
 }
 
+/* Custom Scrollbar for WebKit Browsers (Chrome, Safari) */
+.custom-scrollbar {
+  overflow-y: auto;
+  /* Enable vertical scrolling */
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  /* Width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Background of the scrollbar track */
+  border-radius: 10px;
+  /* Rounded corners for the track */
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  /* Color of the scrollbar handle */
+  border-radius: 10px;
+  /* Rounded corners for the handle */
+}
+
+/* Handle on hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Color of the handle on hover */
+}
+
+/* Optional: Style for the scrollbar in Edge and IE */
+.custom-scrollbar {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  /* Hide scrollbar when not needed in IE */
+}
+
 
 @tailwind base;
 @tailwind components;
