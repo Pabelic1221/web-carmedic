@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { auth, db } from './firebase'; // Adjust the import path as needed
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import Swal from 'sweetalert2'; // Import SweetAlert2
 import sideImage from '../img/Auth/cover-image.png';
@@ -115,10 +115,6 @@ const Auth = ({ setIsAuthenticated }) => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Send email verification
-            await sendEmailVerification(user);
-            showAlert("Verification email sent!", "info");
-
             // Save user data to Firestore
             await setDoc(doc(db, "users", user.uid), {
                 username,
@@ -141,11 +137,13 @@ const Auth = ({ setIsAuthenticated }) => {
                 secretPasskey: '',
             });
 
-            showAlert("Registration successful! Please verify your email.", "success");
+            showAlert("Registration successful! Please login.", "success");
 
-            // Switch back to login form with transition
-            setIsLogin(true);
-            switchForm('login'); // Trigger the transition to the login form
+            // Transition to the login form
+            setTimeout(() => {
+                Swal.close(); // Close the loading modal
+                switchForm('login'); // Show the login form
+            }, 1500);
 
         } catch (error) {
             console.error("Error registering user:", error);
@@ -156,6 +154,8 @@ const Auth = ({ setIsAuthenticated }) => {
             }, 1500);
         }
     };
+
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
