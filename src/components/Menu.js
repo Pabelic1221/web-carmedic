@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MyProfile from './MyProfile';
+import UserManagement from './UserManagement';
 import Logs from './Logs';
+import ChangePassword from './ChangePassword';
 
 const Menu = ({ setIsAuthenticated, handleLogout }) => {
     const [activeTab, setActiveTab] = useState('profile');
@@ -18,14 +20,14 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
 
     return (
         <div className="flex h-full overflow-hidden p-4">
-            <div className="w-1/3 mr-4 bg-blue-900 text-white h-full flex flex-col rounded shadow-lg">
+            <div className="w-1/3 mr-4 bg-gray-500 text-white h-full flex flex-col rounded shadow-lg">
                 <div className="p-6">
                     <h2 className="text-2xl font-bold mb-6">Menu</h2>
                     <ul className="space-y-4">
                         <li>
                             <button
                                 onClick={() => handleTabChange('profile')}
-                                className={`w-full text-left p-2 rounded-md ${activeTab === 'profile' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                                className={`w-full text-left p-2 rounded-md ${activeTab === 'profile' ? 'bg-gray-700' : 'hover:bg-gray-900'}`}
                             >
                                 My Profile
                             </button>
@@ -35,7 +37,7 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
                                 <li>
                                     <button
                                         onClick={() => handleTabChange('management')}
-                                        className={`w-full text-left p-2 rounded-md ${activeTab === 'management' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                                        className={`w-full text-left p-2 rounded-md ${activeTab === 'management' ? 'bg-gray-700' : 'hover:bg-gray-900'}`}
                                     >
                                         User Management
                                     </button>
@@ -43,7 +45,7 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
                                 <li>
                                     <button
                                         onClick={() => handleTabChange('logs')}
-                                        className={`w-full text-left p-2 rounded-md ${activeTab === 'logs' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                                        className={`w-full text-left p-2 rounded-md ${activeTab === 'logs' ? 'bg-gray-700' : 'hover:bg-gray-900'}`}
                                     >
                                         Logs
                                     </button>
@@ -53,7 +55,7 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
                         <li>
                             <button
                                 onClick={() => handleTabChange('changePassword')}
-                                className={`w-full text-left p-2 rounded-md ${activeTab === 'changePassword' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                                className={`w-full text-left p-2 rounded-md ${activeTab === 'changePassword' ? 'bg-gray-700' : 'hover:bg-gray-900'}`}
                             >
                                 Change Password
                             </button>
@@ -65,8 +67,9 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
             <div className="w-full h-full flex flex-col overflow-y-auto">
                 <>
                     {activeTab === 'profile' && <MyProfile setIsAuthenticated={setIsAuthenticated} handleLogout={handleLogout} />}
+                    {activeTab === 'management' && <UserManagement />}
                     {activeTab === 'logs' && <Logs />}
-
+                    {activeTab === 'changePassword' && <ChangePassword />}
                 </>
             </div>
         </div>

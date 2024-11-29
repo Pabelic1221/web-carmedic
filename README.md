@@ -82,3 +82,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - npm install xlsx
 - npm install xlsx-style
 - npm install exceljs file-saver
+- npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons

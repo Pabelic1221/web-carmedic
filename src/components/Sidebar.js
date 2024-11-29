@@ -26,7 +26,7 @@ const Sidebar = ({ setActivePage, currentPage, isAuthenticated, handleLogout }) 
 
     return (
         <div className="min-h-screen flex flex-col bg-black text-white transition-all duration-300 w-60">
-            <h2 className="text-2xl font-bold text-center px-4 py-6">My Application</h2>
+            <h2 className="text-2xl font-bold text-center px-4 py-6">CarMedic</h2>
             <ul className="flex-grow relative">
                 {isAuthenticated ? (
                     pages.map(page => (

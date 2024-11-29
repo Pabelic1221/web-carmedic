@@ -43,12 +43,12 @@ const MyProfile = () => {
     };
 
     return (
-        <div className="flex flex-col bg-blue-900 text-white p-4 rounded-md h-full">
+        <div className="flex flex-col bg-white p-4 rounded-md h-full">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Profile</h2>
                 <button
                     onClick={handleEditToggle}
-                    className="bg-blue-700 text-white p-2 rounded hover:bg-blue-800 transition duration-200"
+                    className="bg-gray-500 text-white p-2 rounded hover:bg-gray-800 transition duration-200"
                 >
                     {editing ? 'Cancel' : 'Edit Profile'}
                 </button>
@@ -69,7 +69,7 @@ const MyProfile = () => {
                             className="w-72 h-72 rounded object-cover"
                         />
                     )}
-                    <label className="mt-4 bg-blue-700 text-white p-2 rounded hover:bg-blue-800 transition duration-200">
+                    <label className="mt-4 bg-gray-500 text-white p-2 rounded hover:bg-gray-800 transition duration-200">
                         Upload Profile Picture
                         <input
                             type="file"
@@ -79,14 +79,14 @@ const MyProfile = () => {
                         />
                     </label>
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 text-left">
                     <div className="mb-4">
                         <label className="block text-md font-medium">First Name</label>
                         <input
                             type="text"
                             value={profileData.firstName}
                             onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
-                            className={`w-full p-2 rounded-md text-white border bg-blue-700 ${editing ? 'border-green-500' : 'border-transparent'}`}
+                            className={`w-full p-2 rounded-md text-white border bg-gray-500 ${editing ? 'border-green-500' : 'border-transparent'}`}
                             readOnly={!editing}
                         />
                     </div>
@@ -97,7 +97,7 @@ const MyProfile = () => {
                             type="text"
                             value={profileData.lastName}
                             onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
-                            className={`w-full p-2 rounded-md text-white border bg-blue-700 ${editing ? 'border-green-500' : 'border-transparent'}`}
+                            className={`w-full p-2 rounded-md text-white border bg-gray-500 ${editing ? 'border-green-500' : 'border-transparent'}`}
                             readOnly={!editing}
                         />
                     </div>
@@ -107,7 +107,7 @@ const MyProfile = () => {
                         <input
                             type="email"
                             value={profileData.email}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-blue-700"
+                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
                             readOnly
                         />
                     </div>
@@ -117,7 +117,7 @@ const MyProfile = () => {
                         <input
                             type="text"
                             value={profileData.gender}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-blue-700"
+                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
                             readOnly
                         />
                     </div>
@@ -128,7 +128,7 @@ const MyProfile = () => {
                             type="text"
                             value={profileData.phoneNumber}
                             onChange={(e) => setProfileData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                            className={`w-full p-2 rounded-md text-white border bg-blue-700 ${editing ? 'border-green-500' : 'border-transparent'}`}
+                            className={`w-full p-2 rounded-md text-white border bg-gray-500 ${editing ? 'border-green-500' : 'border-transparent'}`}
                             readOnly={!editing}
                         />
                     </div>
@@ -138,7 +138,7 @@ const MyProfile = () => {
                         <input
                             type="text"
                             value={profileData.role ? profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1) : 'N/A'}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-blue-700"
+                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
                             readOnly
                         />
                     </div>
