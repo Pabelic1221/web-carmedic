@@ -14,6 +14,7 @@ import { db } from './firebase';
 import Swal from 'sweetalert2';
 import { signOut } from 'firebase/auth';
 import './Styles.css';
+import Menu from './Menu';
 
 const MainComponent = () => {
     const [activePage, setActivePage] = useState('Dashboard');
@@ -92,6 +93,8 @@ const MainComponent = () => {
 
     const renderPage = () => {
         switch (activePage) {
+            case 'Menu':
+                return <Menu />;
             case 'Dashboard':
                 return <Dashboard />;
             case 'Shops':
@@ -121,7 +124,7 @@ const MainComponent = () => {
                     setIsAuthenticated={setIsAuthenticated}
                     userInfo={userInfo}
                 />
-                <div className="content-fade overflow-y-auto p-4 custom-scrollbar">
+                <div className="content-fade h-full overflow-y-auto custom-scrollbar">
                     {renderPage()}
                 </div>
             </div>

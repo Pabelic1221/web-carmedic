@@ -78,3 +78,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 - npm install firebase
 - npm install sweetalert2
 - npm install react-spinners
+- npm i moment
+- npm install xlsx
+- npm install xlsx-style
+- npm install exceljs file-saver
