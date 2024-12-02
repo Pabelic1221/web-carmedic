@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { auth, db } from './firebase'; // Ensure you import auth and db
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import imagePlaceholder from '../img/logo/placeholder-image.png';
 
 const MyProfile = () => {
@@ -15,17 +18,19 @@ const MyProfile = () => {
     const [editing, setEditing] = useState(false);
 
     useEffect(() => {
-        // Simulate fetching user data
-        const initialProfileData = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@example.com',
-            phoneNumber: '12345678901',
-            gender: 'Male',
-            role: 'User ',
+        const fetchUserData = async () => {
+            const currentUser  = auth.currentUser ; // Get the current user
+            if (currentUser ) {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists()) {
+                    setProfileData(userDoc.data()); // Set profile data from Firestore
+                } else {
+                    console.error("User  document does not exist");
+                }
+            }
         };
 
-        setProfileData(initialProfileData);
+        fetchUserData();
     }, []);
 
     const handleEditToggle = () => {
@@ -40,6 +45,31 @@ const MyProfile = () => {
             setProfilePicturePreview(event.target.result);
         };
         reader.readAsDataURL(image);
+    };
+
+    const handleSaveChanges = async () => {
+        const currentUser  = auth.currentUser ;
+        if (currentUser ) {
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userDocRef, profileData); // Update user data in Firestore
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Profile updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+                setEditing(false); // Exit editing mode after saving
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to update profile. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                });
+            }
+        }
     };
 
     return (
@@ -90,7 +120,6 @@ const MyProfile = () => {
                             readOnly={!editing}
                         />
                     </div>
-
                     <div className="mb-4">
                         <label className="block text-md font-medium">Last Name</label>
                         <input
@@ -101,27 +130,15 @@ const MyProfile = () => {
                             readOnly={!editing}
                         />
                     </div>
-
                     <div className="mb-4">
                         <label className="block text-md font-medium">Email</label>
                         <input
                             type="email"
                             value={profileData.email}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
+                            className="w-full p-2 rounded-md text-white border bg-gray-500"
                             readOnly
                         />
                     </div>
-
-                    <div className="mb-4">
-                        <label className="block text-md font-medium">Gender</label>
-                        <input
-                            type="text"
-                            value={profileData.gender}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
-                            readOnly
-                        />
-                    </div>
-
                     <div className="mb-4">
                         <label className="block text-md font-medium">Phone Number</label>
                         <input
@@ -132,27 +149,37 @@ const MyProfile = () => {
                             readOnly={!editing}
                         />
                     </div>
-
+                    <div className="mb-4">
+                        <label className="block text-md font-medium">Gender</label>
+                        <input
+                            type="text"
+                            value={profileData.gender}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, gender: e.target.value }))}
+                            className={`w-full p-2 rounded-md text-white border bg-gray-500 ${editing ? 'border-green-500' : 'border-transparent'}`}
+                            readOnly={!editing}
+                        />
+                    </div>
                     <div className="mb-4">
                         <label className="block text-md font-medium">Role</label>
                         <input
                             type="text"
-                            value={profileData.role ? profileData.role.charAt(0).toUpperCase() + profileData.role.slice(1) : 'N/A'}
-                            className="w-full p-2 rounded-md text-white border border-transparent bg-gray-500"
-                            readOnly
+                            value={profileData.role.toUpperCase()} // Convert role to uppercase
+                            onChange={(e) => setProfileData(prev => ({ ...prev, role: e.target.value }))}
+                            className={`w-full p-2 rounded-md text-white border bg-gray-500 ${editing ? 'border-green-500' : 'border-transparent'}`}
+                            readOnly={!editing}
                         />
                     </div>
+
+                    {editing && (
+                        <button
+                            onClick={handleSaveChanges}
+                            className="bg-green-500 text-white p-2 rounded hover:bg-green-800 transition duration-200"
+                        >
+                            Save Changes
+                        </button>
+                    )}
                 </div>
             </div>
-
-            {editing && (
-                <button
-                    onClick={() => alert('Save functionality removed')}
-                    className="mt-4 p-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-200"
-                >
-                    Save
-                </button>
-            )}
         </div>
     );
 };

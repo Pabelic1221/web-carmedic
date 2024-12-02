@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
-import { db } from './firebase'; // Adjust the import path as needed
+import { db } from './firebase';
 import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 const UserManagement = () => {
-    const [users, setUsers] = useState([]); // State for storing users
-    const [formData, setFormData] = useState({ firstName: '', lastName: '', address: '', email: '' }); // Form data
-    const [isEditing, setIsEditing] = useState(false); // State to check if editing
-    const [currentUserId, setCurrentUserId] = useState(null); // Current user ID for editing
-    const [showModal, setShowModal] = useState(false); // Modal visibility state
-    const [userIdToDelete, setUserIdToDelete] = useState(null); // User ID to delete
+    const [users, setUsers] = useState([]);
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', address: '', email: '' });
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [userIdToDelete, setUserIdToDelete] = useState(null);
 
-    // Fetch users on component mount
+
     useEffect(() => {
         fetchUsers();
     }, []);
 
-    // Function to fetch users from Firestore
     const fetchUsers = async () => {
         try {
-            const usersCollection = collection(db, 'users'); // Firestore collection
+            const usersCollection = collection(db, 'users');
             const usersSnapshot = await getDocs(usersCollection);
             const usersList = usersSnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
             }));
-            setUsers(usersList); // Update users state
+            setUsers(usersList);
         } catch (error) {
             console.error("Error fetching users:", error);
         }
@@ -36,7 +35,7 @@ const UserManagement = () => {
         try {
             await addDoc(collection(db, 'users'), formData);
             setFormData({ firstName: '', lastName: '', address: '', email: '' }); // Clear form
-            fetchUsers(); // Refresh user list
+            fetchUsers();
         } catch (error) {
             console.error("Error creating user:", error);
         }
@@ -57,7 +56,7 @@ const UserManagement = () => {
             setFormData({ firstName: '', lastName: '', address: '', email: '' }); // Clear form
             setIsEditing(false);
             setCurrentUserId(null);
-            fetchUsers(); // Refresh user list
+            fetchUsers();
         } catch (error) {
             console.error("Error updating user:", error);
         }
@@ -68,8 +67,8 @@ const UserManagement = () => {
         try {
             const userDoc = doc(db, 'users', userIdToDelete);
             await deleteDoc(userDoc);
-            setShowModal(false); // Close modal
-            fetchUsers(); // Refresh user list
+            setShowModal(false);
+            fetchUsers();
         } catch (error) {
             console.error("Error deleting user:", error);
         }
