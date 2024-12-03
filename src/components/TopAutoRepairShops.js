@@ -16,7 +16,7 @@ const TopAutoRepairShops = () => {
     ];
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-4 h-full">
+        <div className="bg-white shadow-md rounded-lg p-4 h-full flex flex-col flex-grow">
             <h1 className="text-2xl font-bold mb-4 flex items-center">
                 <FaTools className="mr-2 text-3xl text-green-500" />
                 Top Auto Repair Shops

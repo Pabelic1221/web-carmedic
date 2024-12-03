@@ -9,7 +9,7 @@ const Feedbacks = () => {
     ];
 
     return (
-        <div className="p-4">
+        <div className="p-4 flex flex-col flex-grow">
             <h1 className="text-2xl font-bold mb-4">Feedbacks</h1>
             <ul className="space-y-2">
                 {feedbacks.map(feedback => (
