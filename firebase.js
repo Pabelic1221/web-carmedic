@@ -19,14 +19,12 @@ const firebaseConfig = {
 };
 
 const firebaseConfig2 = {
-    apiKey: "AIzaSyAnNYYtllwo9dfOF636KcGXfNhiBC6EYQI",
-    authDomain: "carmedicdb.firebaseapp.com",
-    databaseURL: "https://carmedicdb-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "carmedicdb",
-    storageBucket: "carmedicdb.firebasestorage.app",
-    messagingSenderId: "873364370703",
-    appId: "1:873364370703:web:dc2a463af427cd271d3a7a",
-    measurementId: "G-G6WTDZB2Z9"
+  apiKey: "AIzaSyCW7W43zrdrBrF50yG2S6szorhMiWU2060",
+  authDomain: "cooking-ina-mo.firebaseapp.com",
+  projectId: "cooking-ina-mo",
+  storageBucket: "cooking-ina-mo.appspot.com",
+  messagingSenderId: "151249945282",
+  appId: "1:151249945282:web:f5f7031dc3e1261489315b"
   };
 
 // Initialize Firebase

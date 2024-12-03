@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from './firebase'; // Ensure you import auth and db
+import { auth, db } from './firebase'; // Import auth and db from the main firebase config
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Import Firebase Storage functions
 import Swal from 'sweetalert2'; // Import SweetAlert2
 import imagePlaceholder from '../img/logo/placeholder-image.png';
+
+// Import the storage instance from firebase.js
+const storage = getStorage(); // This should be your storage initialized with firebaseConfig2
 
 const MyProfile = () => {
     const [profileData, setProfileData] = useState({
@@ -12,10 +16,12 @@ const MyProfile = () => {
         phoneNumber: '',
         gender: '',
         role: '',
+        profilePicture: '', // Field for the profile picture URL
     });
 
     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
     const [editing, setEditing] = useState(false);
+    const [imageSelected, setImageSelected] = useState(false); // State to track if an image is selected
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -43,8 +49,24 @@ const MyProfile = () => {
         const reader = new FileReader();
         reader.onload = (event) => {
             setProfilePicturePreview(event.target.result);
+            setImageSelected(true); // Set imageSelected to true when an image is selected
         };
         reader.readAsDataURL(image);
+
+        // Upload the image to Firebase Storage
+        const uploadImage = async () => {
+            const currentUser  = auth.currentUser ;
+            if (currentUser ) {
+                const storageRef = ref(storage, `profilePictures/${currentUser.uid}/profileImage`);
+                await uploadBytes(storageRef, image);
+                const downloadURL = await getDownloadURL(storageRef);
+                
+                // Update the profile data with the new image URL
+                setProfileData(prev => ({ ...prev, profilePicture: downloadURL }));
+            }
+        };
+
+        uploadImage();
     };
 
     const handleSaveChanges = async () => {
@@ -60,6 +82,7 @@ const MyProfile = () => {
                     confirmButtonText: 'OK',
                 });
                 setEditing(false); // Exit editing mode after saving
+                setImageSelected(false); // Reset image selection state
             } catch (error) {
                 console.error("Error updating profile:", error);
                 Swal.fire({
@@ -81,7 +104,7 @@ const MyProfile = () => {
                     className="bg-gray-500 text-white p-2 rounded hover:bg-gray-800 transition duration-200"
                 >
                     {editing ? 'Cancel' : 'Edit Profile'}
-                </button>
+                </ button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -94,7 +117,7 @@ const MyProfile = () => {
                         />
                     ) : (
                         <img
-                            src={imagePlaceholder}
+                            src={profileData.profilePicture || imagePlaceholder}
                             alt="Profile"
                             className="w-72 h-72 rounded object-cover"
                         />
@@ -170,13 +193,10 @@ const MyProfile = () => {
                         />
                     </div>
 
-                    {editing && (
+                    {editing && (imageSelected || profilePicturePreview) && ( // Show Save Changes button if editing or image is selected
                         <button
                             onClick={handleSaveChanges}
-                            className="bg-green-500 text-white p-2 rounded hover:bg-green-800 transition duration-200"
-                        >
-                            Save Changes
-                        </button>
+                            className="bg-green-500 text-white p-2 rounded hover:bg-green-800 transition duration-200">Save Changes</button>
                     )}
                 </div>
             </div>
