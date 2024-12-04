@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import { db } from './firebase';
 import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const UserManagement = () => {
     const [currentUserId, setCurrentUserId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState(null);
+    const [originalFormData, setOriginalFormData] = useState({});
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -45,14 +47,26 @@ const UserManagement = () => {
     };
 
     // Function to edit a user
-    const handleEditUser   = (user) => {
+    const handleEditUser  = (user) => {
         setFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email });
         setIsEditing(true);
         setCurrentUserId(user.id);
+        setOriginalFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email }); // Store original data
     };
 
     // Function to update a user
     const handleUpdateUser   = async () => {
+        // Check if there are changes
+        if (JSON.stringify(formData) === JSON.stringify(originalFormData)) {
+            Swal.fire({
+                title: 'No changes detected!',
+                text: 'Please make changes before saving.',
+                icon: 'info',
+                confirmButtonText: 'OK',
+            });
+            return; // Exit if no changes
+        }
+
         try {
             const userDoc = doc(db, 'users', currentUserId);
             await updateDoc(userDoc, formData);
@@ -87,6 +101,13 @@ const UserManagement = () => {
         }
     };
 
+    // Function to cancel editing
+    const handleCancelEdit = () => {
+        setFormData(originalFormData); // Reset to original data
+        setIsEditing(false); // Exit editing mode
+        setCurrentUserId(null); // Clear current user ID
+    };
+
     // Pagination logic
     const indexOfLastUser  = currentPage * usersPerPage;
     const indexOfFirstUser  = indexOfLastUser  - usersPerPage;
@@ -95,7 +116,7 @@ const UserManagement = () => {
 
     return (
         <div className="p-4 bg-white rounded-lg shadow-md h-full">
-            <h2 className="text-2xl font-bold mb-4 text-left">User  Management</h2>
+            <h2 className="text-2xl font-bold mb-4 text-left">User Management</h2>
             <form onSubmit={handleSubmit} className="mb-4">
                 <input
                     type="text"
@@ -114,13 +135,13 @@ const UserManagement = () => {
                     className="border p-2 rounded mr-2"
                 />
                 <input
-                     type="text"
-                      placeholder="Address"
-                      value={formData.address}
-                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                       required
-                        className="border p-2 rounded mr-2"
-                    />
+                    type="text"
+                    placeholder="Address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    required
+                    className="border p-2 rounded mr-2"
+                />
                 <input
                     type="email"
                     placeholder="Email"
@@ -132,6 +153,12 @@ const UserManagement = () => {
                 <button type="submit" className="bg-blue-500 text-white p-2 rounded">
                     {isEditing ? 'Update User' : 'Add User'}
                 </button>
+                {isEditing && (
+                <button
+                    type="button"
+                    onClick={handleCancelEdit} // Call handleCancelEdit here
+                    className="bg-gray-500 text-white p-2 rounded ml-2">Cancel</button>
+                )}
             </form>
             <table className="min-w-full border-collapse border border-gray-300">
                 <thead>
