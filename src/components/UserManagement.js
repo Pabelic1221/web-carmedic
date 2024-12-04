@@ -11,6 +11,9 @@ const UserManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState(null);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 6; // Limit to 6 users per page
 
     useEffect(() => {
         fetchUsers();
@@ -31,7 +34,7 @@ const UserManagement = () => {
     };
 
     // Function to create a new user
-    const handleCreateUser  = async () => {
+    const handleCreateUser   = async () => {
         try {
             await addDoc(collection(db, 'users'), formData);
             setFormData({ firstName: '', lastName: '', address: '', email: '' }); // Clear form
@@ -42,14 +45,14 @@ const UserManagement = () => {
     };
 
     // Function to edit a user
-    const handleEditUser  = (user) => {
+    const handleEditUser   = (user) => {
         setFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email });
         setIsEditing(true);
         setCurrentUserId(user.id);
     };
 
     // Function to update a user
-    const handleUpdateUser  = async () => {
+    const handleUpdateUser   = async () => {
         try {
             const userDoc = doc(db, 'users', currentUserId);
             await updateDoc(userDoc, formData);
@@ -63,7 +66,7 @@ const UserManagement = () => {
     };
 
     // Function to delete a user
-    const handleDeleteUser  = async () => {
+    const handleDeleteUser   = async () => {
         try {
             const userDoc = doc(db, 'users', userIdToDelete);
             await deleteDoc(userDoc);
@@ -78,11 +81,17 @@ const UserManagement = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isEditing) {
-            handleUpdateUser ();
+            handleUpdateUser  ();
         } else {
-            handleCreateUser ();
+            handleCreateUser  ();
         }
     };
+
+    // Pagination logic
+    const indexOfLastUser  = currentPage * usersPerPage;
+    const indexOfFirstUser  = indexOfLastUser  - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser , indexOfLastUser );
+    const totalPages = Math.ceil(users.length / usersPerPage);
 
     return (
         <div className="p-4 bg-white rounded-lg shadow-md h-full">
@@ -105,13 +114,13 @@ const UserManagement = () => {
                     className="border p-2 rounded mr-2"
                 />
                 <input
-                    type="text"
-                    placeholder="Address"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData , address: e.target.value })}
-                    required
-                    className="border p-2 rounded mr-2"
-                />
+                     type="text"
+                      placeholder="Address"
+                      value={formData.address}
+                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                       required
+                        className="border p-2 rounded mr-2"
+                    />
                 <input
                     type="email"
                     placeholder="Email"
@@ -137,7 +146,7 @@ const UserManagement = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user) => (
+                    {currentUsers.map((user) => (
                         <tr key={user.id} className="hover:bg-gray-50 text-left">
                             <td className="border border-gray-300 px-4 py-2">{user.id}</td>
                             <td className="border border-gray-300 px-4 py-2">{user.firstName}</td>
@@ -161,19 +170,28 @@ const UserManagement = () => {
                     ))}
                 </tbody>
             </table>
+            <div className="flex justify-center items-center mt-4">
+                <button 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                    disabled={currentPage === 1} 
+                    className="bg-gray-300 p-2 rounded mr-10">Previous</button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+                    disabled={currentPage === totalPages} 
+                    className="bg-gray-300 p-2 rounded ml-10">Next</button>
+            </div>
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded shadow-lg">
                         <p className="text-lg">Are you sure you want to delete this user?</p>
                         <div className="mt-4">
-                            <button onClick={handleDeleteUser } 
-                                className="bg-red-500 text-white p-2 rounded mr-2">Yes</button>
-                            <button onClick={() => setShowModal(false)} 
-                                className="bg-gray-300 text-black p-2 rounded">No</button>
-                     </div>
+                            <button onClick={handleDeleteUser } className="bg-red-500 text-white p-2 rounded mr-2">Yes</button>
+                            <button onClick={() => setShowModal(false)} className="bg-gray-300 text-black p-2 rounded">No</button>
+                        </div>
                     </div>
-               </div>
-            )}          
+                </div>
+            )}
         </div>
     );
 };
