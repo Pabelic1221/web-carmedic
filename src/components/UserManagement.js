@@ -56,7 +56,6 @@ const UserManagement = () => {
 
     // Function to update a user
     const handleUpdateUser   = async () => {
-        // Check if there are changes
         if (JSON.stringify(formData) === JSON.stringify(originalFormData)) {
             Swal.fire({
                 title: 'No changes detected!',
@@ -64,9 +63,8 @@ const UserManagement = () => {
                 icon: 'info',
                 confirmButtonText: 'OK',
             });
-            return; // Exit if no changes
+            return;
         }
-
         try {
             const userDoc = doc(db, 'users', currentUserId);
             await updateDoc(userDoc, formData);
@@ -74,6 +72,13 @@ const UserManagement = () => {
             setIsEditing(false);
             setCurrentUserId(null);
             fetchUsers();
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'User  updated successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
         } catch (error) {
             console.error("Error updating user:", error);
         }
