@@ -39,7 +39,7 @@ const UserManagement = () => {
     const handleCreateUser   = async () => {
         try {
             await addDoc(collection(db, 'users'), formData);
-            setFormData({ firstName: '', lastName: '', address: '', email: '' }); // Clear form
+            setFormData({ firstName: '', lastName: '', address: '', email: '', role: 'user' }); // Clear form
             fetchUsers();
         } catch (error) {
             console.error("Error creating user:", error);
