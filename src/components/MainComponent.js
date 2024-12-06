@@ -6,7 +6,6 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import Dashboard from './Dashboard';
 import Shops from './Shops';
-import Users from './Users';
 import Feedbacks from './Feedbacks';
 import Loader from './Loader';
 import Auth from './Auth';
@@ -99,8 +98,6 @@ const MainComponent = () => {
                 return <Dashboard />;
             case 'Shops':
                 return <Shops />;
-            case 'Users':
-                return <Users />;
             case 'Feedbacks':
                 return <Feedbacks />;
             default:

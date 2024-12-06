@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaSignOutAlt, FaHome, FaStore, FaUsers, FaComments, FaCubes } from 'react-icons/fa'; // Import the necessary icons
+import { FaSignOutAlt, FaHome, FaStore, FaComments, FaCubes } from 'react-icons/fa'; // Import the necessary icons
 import './SidebarIndicator.css'; // Import the CSS file
 
 const Sidebar = ({ setActivePage, currentPage, isAuthenticated, handleLogout }) => {
@@ -8,7 +8,6 @@ const Sidebar = ({ setActivePage, currentPage, isAuthenticated, handleLogout }) 
         { name: 'Menu', key: 'Menu', icon: <FaCubes size={25} className="text-white" /> },
         { name: 'Dashboard', key: 'Dashboard', icon: <FaHome size={25} className="text-white" /> },
         { name: 'Shops', key: 'Shops', icon: <FaStore size={25} className="text-white" /> },
-        { name: 'Users', key: 'Users', icon: <FaUsers size={25} className="text-white" /> },
         { name: 'Feedbacks', key: 'Feedbacks', icon: <FaComments size={25} className="text-white" /> }
     ];
 

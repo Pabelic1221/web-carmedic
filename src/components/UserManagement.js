@@ -36,7 +36,7 @@ const UserManagement = () => {
     };
 
     // Function to create a new user
-    const handleCreateUser   = async () => {
+    const handleCreateUser = async () => {
         try {
             await addDoc(collection(db, 'users'), formData);
             setFormData({ firstName: '', lastName: '', address: '', email: '', role: 'user' }); // Clear form
@@ -47,7 +47,7 @@ const UserManagement = () => {
     };
 
     // Function to edit a user
-    const handleEditUser  = (user) => {
+    const handleEditUser = (user) => {
         setFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email });
         setIsEditing(true);
         setCurrentUserId(user.id);
@@ -55,7 +55,7 @@ const UserManagement = () => {
     };
 
     // Function to update a user
-    const handleUpdateUser   = async () => {
+    const handleUpdateUser = async () => {
         if (JSON.stringify(formData) === JSON.stringify(originalFormData)) {
             Swal.fire({
                 title: 'No changes detected!',
@@ -85,7 +85,7 @@ const UserManagement = () => {
     };
 
     // Function to delete a user
-    const handleDeleteUser   = async () => {
+    const handleDeleteUser = async () => {
         try {
             const userDoc = doc(db, 'users', userIdToDelete);
             await deleteDoc(userDoc);
@@ -100,9 +100,9 @@ const UserManagement = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (isEditing) {
-            handleUpdateUser  ();
+            handleUpdateUser();
         } else {
-            handleCreateUser  ();
+            handleCreateUser();
         }
     };
 
@@ -114,9 +114,9 @@ const UserManagement = () => {
     };
 
     // Pagination logic
-    const indexOfLastUser  = currentPage * usersPerPage;
-    const indexOfFirstUser  = indexOfLastUser  - usersPerPage;
-    const currentUsers = users.slice(indexOfFirstUser , indexOfLastUser );
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
     const totalPages = Math.ceil(users.length / usersPerPage);
 
     return (
@@ -159,10 +159,10 @@ const UserManagement = () => {
                     {isEditing ? 'Update User' : 'Add User'}
                 </button>
                 {isEditing && (
-                <button
-                    type="button"
-                    onClick={handleCancelEdit} // Call handleCancelEdit here
-                    className="bg-gray-500 text-white p-2 rounded ml-2">Cancel</button>
+                    <button
+                        type="button"
+                        onClick={handleCancelEdit} // Call handleCancelEdit here
+                        className="bg-gray-500 text-white p-2 rounded ml-2">Cancel</button>
                 )}
             </form>
             <table className="min-w-full border-collapse border border-gray-300">
@@ -191,7 +191,7 @@ const UserManagement = () => {
                                 </button>
                             </td>
                             <td className="border border-gray-300 px-4 py-2 text-center">
-                                <button className="text-green-500 hover:text-green-700 mx-2" onClick={() => handleEditUser (user)}>
+                                <button className="text-green-500 hover:text-green-700 mx-2" onClick={() => handleEditUser(user)}>
                                     <FaEdit />
                                 </button>
                                 <button className="text-red-500 hover:text-red-700" onClick={() => { setUserIdToDelete(user.id); setShowModal(true); }}>
@@ -203,22 +203,23 @@ const UserManagement = () => {
                 </tbody>
             </table>
             <div className="flex justify-center items-center mt-4">
-                <button 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-                    disabled={currentPage === 1} 
-                    className="bg-gray-300 p-2 rounded mr-10">Previous</button>
+                <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="bg-gray-300 p-2 rounded mr-10">Prev</button>
                 <span>Page {currentPage} of {totalPages}</span>
-                <button 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
-                    disabled={currentPage === totalPages} 
+                <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
                     className="bg-gray-300 p-2 rounded ml-10">Next</button>
             </div>
+
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded shadow-lg">
                         <p className="text-lg">Are you sure you want to delete this user?</p>
                         <div className="mt-4">
-                            <button onClick={handleDeleteUser } className="bg-red-500 text-white p-2 rounded mr-2">Yes</button>
+                            <button onClick={handleDeleteUser} className="bg-red-500 text-white p-2 rounded mr-2">Yes</button>
                             <button onClick={() => setShowModal(false)} className="bg-gray-300 text-black p-2 rounded">No</button>
                         </div>
                     </div>

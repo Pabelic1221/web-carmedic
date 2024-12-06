@@ -20,7 +20,7 @@ const Menu = ({ setIsAuthenticated, handleLogout }) => {
 
     return (
         <div className="flex h-full overflow-hidden p-4">
-            <div className="w-1/3 mr-4 bg-gray-500 text-white h-full flex flex-col rounded shadow-lg">
+            <div className="w-1/4 mr-4 bg-gray-500 text-white h-full flex flex-col rounded shadow-lg">
                 <div className="p-6">
                     <h2 className="text-2xl font-bold mb-6">Menu</h2>
                     <ul className="space-y-4">

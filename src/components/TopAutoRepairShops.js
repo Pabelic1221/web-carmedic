@@ -21,7 +21,7 @@ const TopAutoRepairShops = () => {
                 <FaTools className="mr-2 text-3xl text-green-500" />
                 Top Auto Repair Shops
             </h1>
-            <div className="overflow-x-auto h-96">
+            <div className="overflow-y-auto h-96">
                 <table className="min-w-full border-collapse">
                     <thead className="bg-gray-200 sticky top-0 z-10">
                         <tr>
