@@ -7,24 +7,46 @@ const TopAutoRepairShops = () => {
     const [shops, setShops] = useState([]);
 
     useEffect(() => {
-        const fetchShops = async () => {
+        const fetchShopsAndReviews = async () => {
             try {
-                const shopsCollection = collection(db, "shops"); // Assuming your collection is named "shops"
+                // Fetch shops
+                const shopsCollection = collection(db, "shops");
                 const shopSnapshot = await getDocs(shopsCollection);
                 const shopList = shopSnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 }));
 
+                // Fetch reviews
+                const reviewsCollection = collection(db, "reviews");
+                const reviewSnapshot = await getDocs(reviewsCollection);
+                const reviewList = reviewSnapshot.docs.map(doc => ({
+                    ...doc.data()
+                }));
+
+                // Calculate average rating and count for each shop
+                const shopsWithRatings = shopList.map(shop => {
+                    const shopReviews = reviewList.filter(review => review.shopId === shop.id);
+                    const totalRating = shopReviews.reduce((acc, review) => acc + review.rating, 0);
+                    const ratingCount = shopReviews.length;
+                    const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 0; // Calculate average rating
+
+                    return {
+                        ...shop,
+                        rating: averageRating,
+                        ratingCount: ratingCount
+                    };
+                });
+
                 // Sort the shops by rating in descending order
-                const sortedShops = shopList.sort((a, b) => b.rating - a.rating);
+                const sortedShops = shopsWithRatings.sort((a, b) => b.rating - a.rating);
                 setShops(sortedShops);
             } catch (error) {
-                console.error("Error fetching shops:", error);
+                console.error("Error fetching shops or reviews:", error);
             }
         };
 
-        fetchShops();
+        fetchShopsAndReviews();
     }, []);
 
     return (
@@ -50,7 +72,7 @@ const TopAutoRepairShops = () => {
                                     <div className="font-semibold">{shop.shopName}</div>
                                 </td>
                                 <td className="p-2">{shop.rating} ★</td>
-                                <td className="p-2">{shop.ratingCount} Ratings</td>
+                                <td className="p-2">{shop.ratingCount}</td>
                                 <td className="p-2">
                                     <button className="bg-blue-500 text-white py-1 px-3 rounded">View</button>
                                 </td>
