@@ -51,7 +51,7 @@ const UserManagement = () => {
         setFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email });
         setIsEditing(true);
         setCurrentUserId(user.id);
-        setOriginalFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email }); // Store original data
+        setOriginalFormData({ firstName: user.firstName, lastName: user.lastName, address: user.address, email: user.email });
     };
 
     // Function to update a user
