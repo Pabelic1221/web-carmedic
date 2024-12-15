@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaChartLine } from 'react-icons/fa';
 import { Line } from 'react-chartjs-2'; // Assuming you are using Chart.js for the graph
 import {
@@ -11,17 +11,49 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
+import { db } from './firebase'; // Import Firestore
+import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions
+import moment from 'moment'; // Import moment.js for date handling
 
 // Register the components you will be using
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const MonthlyUsers = () => {
+    const [monthlyData, setMonthlyData] = useState([]); // State to hold monthly user data
+
+    // Fetch monthly user data from Firestore
+    const fetchMonthlyUsers = async () => {
+        try {
+            const usersCollection = collection(db, "users"); // Assuming your collection is named "users"
+            const userSnapshot = await getDocs(usersCollection);
+            const users = userSnapshot.docs.map(doc => doc.data());
+
+            // Create an array to hold user counts for each month
+            const userCounts = Array(12).fill(0); // Initialize counts for each month (January to December)
+
+            // Count users registered in each month
+            users.forEach(user => {
+                const registrationDate = moment(user.registrationDate); // Assuming you have a registrationDate field
+                const month = registrationDate.month(); // Get the month (0-11)
+                userCounts[month] += 1; // Increment the count for the corresponding month
+            });
+
+            setMonthlyData(userCounts); // Update the state with the monthly user counts
+        } catch (error) {
+            console.error("Error fetching monthly users:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMonthlyUsers(); // Call fetchMonthlyUsers when the component mounts
+    }, []);
+
     const data = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         datasets: [
             {
                 label: 'Monthly Users',
-                data: [30, 70, 100, 50, 80, 120],
+                data: monthlyData, // Use the fetched monthly user counts
                 fill: false,
                 backgroundColor: 'rgba(75,192,192,1)',
                 borderColor: 'rgba(75,192,192,0.4)',

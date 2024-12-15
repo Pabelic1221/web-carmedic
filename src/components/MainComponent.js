@@ -26,8 +26,23 @@ const MainComponent = () => {
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
-                    setUserInfo(userDoc.data());
-                    setIsAuthenticated(true);
+                    const userData = userDoc.data();
+                    setUserInfo(userData);
+                    
+                    // Check if the user role is admin
+                    if (userData.role === 'admin') {
+                        setIsAuthenticated(true);
+                    } else {
+                        // If not admin, sign out and show alert
+                        await signOut(auth);
+                        Swal.fire({
+                            title: 'Access Denied',
+                            text: 'You do not have permission to access this application.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
+                        setIsAuthenticated(false);
+                    }
                 } else {
                     // User document does not exist
                     setIsAuthenticated(false);
@@ -87,8 +102,6 @@ const MainComponent = () => {
     if (!isAuthenticated) {
         return <Auth setIsAuthenticated={setIsAuthenticated} />; // Render Auth component if not authenticated
     }
-
-
 
     const renderPage = () => {
         switch (activePage) {

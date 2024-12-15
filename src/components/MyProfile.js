@@ -26,7 +26,7 @@ const MyProfile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             const currentUser  = auth.currentUser ; // Get the current user
-            if (currentUser ) {
+            if (currentUser) {
                 const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
                 if (userDoc.exists()) {
                     setProfileData(userDoc.data()); // Set profile data from Firestore
@@ -52,21 +52,32 @@ const MyProfile = () => {
             setImageSelected(true); // Set imageSelected to true when an image is selected
         };
         reader.readAsDataURL(image);
+    };
 
-        // Upload the image to Firebase Storage
-        const uploadImage = async () => {
-            const currentUser  = auth.currentUser ;
-            if (currentUser ) {
-                const storageRef = ref(storage, `profilePictures/${currentUser.uid}/profileImage`);
-                await uploadBytes(storageRef, image);
-                const downloadURL = await getDownloadURL(storageRef);
-                
-                // Update the profile data with the new image URL
-                setProfileData(prev => ({ ...prev, profilePicture: downloadURL }));
-            }
-        };
+    const uploadImage = async (image) => {
+        const currentUser  = auth.currentUser ;
+        if (currentUser ) {
+            const storageRef = ref(storage, `profilePictures/${currentUser.uid}/profileImage`);
+            await uploadBytes(storageRef, image);
+            const downloadURL = await getDownloadURL(storageRef);
+            
+            // Update the profile data with the new image URL
+            setProfileData(prev => ({ ...prev, profilePicture: downloadURL }));
+        }
+    };
 
-        uploadImage();
+    const handleSaveImage = async () => {
+        const image = profilePicturePreview; // Use the selected image
+        if (image) {
+            await uploadImage(image);
+            Swal.fire({
+                title: 'Success!',
+                text: 'Profile picture updated successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
+            setImageSelected(false); // Reset image selection state
+        }
     };
 
     const handleSaveChanges = async () => {
@@ -82,7 +93,6 @@ const MyProfile = () => {
                     confirmButtonText: 'OK',
                 });
                 setEditing(false); // Exit editing mode after saving
-                setImageSelected(false); // Reset image selection state
             } catch (error) {
                 console.error("Error updating profile:", error);
                 Swal.fire({
@@ -104,7 +114,7 @@ const MyProfile = () => {
                     className="bg-gray-500 text-white p-2 rounded hover:bg-gray-800 transition duration-200"
                 >
                     {editing ? 'Cancel' : 'Edit Profile'}
-                </ button>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -131,6 +141,14 @@ const MyProfile = () => {
                             className="hidden"
                         />
                     </label>
+                    {editing && imageSelected && (
+                        <button
+                            onClick={handleSaveImage}
+                            className="mt-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-800 transition duration-200"
+                        >
+                            Save Image
+                        </button>
+                    )}
                 </div>
                 <div className="col-span-2 text-left">
                     <div className="mb-4">
@@ -193,10 +211,13 @@ const MyProfile = () => {
                         />
                     </div>
 
-                    {editing && (imageSelected || profilePicturePreview) && ( // Show Save Changes button if editing or image is selected
+                    {editing && (
                         <button
                             onClick={handleSaveChanges}
-                            className="bg-green-500 text-white p-2 rounded hover:bg-green-800 transition duration-200">Save Changes</button>
+                            className="bg-green-500 text-white p-2 rounded hover:bg-green-800 transition duration-200"
+                        >
+                            Save Changes
+                        </button>
                     )}
                 </div>
             </div>
