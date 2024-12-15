@@ -203,7 +203,7 @@ const Shops = () => {
                                         <div className="text-gray-500">{shop.address}</div>
                                     </td>
                                     <td className="border p-2 text-center">{shop.owner || "N/A"}</td>
-                                    <td className="border p-2 text-center">★ {shop.rating || "N/A"}  <span style={{ color: 'gray' }}>({shop.ratingCount})</span></td>
+                                    <td className="border p-2 text-center">★ {shop.rating || "0"}  <span style={{ color: 'gray' }}>({shop.ratingCount})</span></td>
                                     <td className="border p-2 text-center">
                                         <button className="text-blue-500 hover:underline" onClick={() => handleEditClick(shop)}>
                                             <FaEdit />
