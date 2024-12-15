@@ -61,7 +61,6 @@ const TopAutoRepairShops = () => {
                         <tr>
                             <th className="p-2 text-left w-1/2">Shop Name</th>
                             <th className="p-2 w-1/5">Rating</th>
-                            <th className="p-2 w-1/5">Rating Count</th>
                             <th className="p-2 w-1/5">Actions</th>
                         </tr>
                     </thead>
@@ -71,8 +70,7 @@ const TopAutoRepairShops = () => {
                                 <td className="p-2 text-left">
                                     <div className="font-semibold">{shop.shopName}</div>
                                 </td>
-                                <td className="p-2">{shop.rating} ★</td>
-                                <td className="p-2">{shop.ratingCount}</td>
+                                <td className="p-2">★ {shop.rating} <span style={{ color: 'gray' }}>({shop.ratingCount})</span></td>
                                 <td className="p-2">
                                     <button className="bg-blue-500 text-white py-1 px-3 rounded">View</button>
                                 </td>

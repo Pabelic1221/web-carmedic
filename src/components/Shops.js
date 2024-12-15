@@ -1,34 +1,57 @@
-// src/components/Shops.js
-
 import React, { useState, useRef, useEffect } from "react";
-import { FaEdit, FaTrash, FaBoxes } from "react-icons/fa"; // Import FaBoxes
-import { db } from "./firebase"; // Import Firestore
-import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore"; // Import Firestore functions
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import { FaEdit, FaTrash, FaBoxes } from "react-icons/fa";
+import { db } from "./firebase";
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import Swal from 'sweetalert2';
 
 const Shops = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredShops, setFilteredShops] = useState([]);
-    const [shops, setShops] = useState([]); // State to hold shops data
-    const [selectedShop, setSelectedShop] = useState(null); // State to hold the selected shop for editing
-    const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+    const [shops, setShops] = useState([]);
+    const [selectedShop, setSelectedShop] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const dropdownRef = useRef();
     const modalRef = useRef();
 
-    // Fetch shops from Firestore
-    const fetchShops = async () => {
-        const shopsCollection = collection(db, "shops"); // Assuming your collection is named "shops"
-        const shopSnapshot = await getDocs(shopsCollection);
-        const shopList = shopSnapshot.docs.map(doc => ({
-            shopID: doc.id, // Use shopID from Firestore
-            ...doc.data()
-        }));
-        setShops(shopList);
+    // Fetch shops and reviews from Firestore
+    const fetchShopsAndReviews = async () => {
+        try {
+            const shopsCollection = collection(db, "shops");
+            const shopSnapshot = await getDocs(shopsCollection);
+            const shopList = shopSnapshot.docs.map(doc => ({
+                shopID: doc.id,
+                ...doc.data()
+            }));
+
+            const reviewsCollection = collection(db, "reviews");
+            const reviewSnapshot = await getDocs(reviewsCollection);
+            const reviewList = reviewSnapshot.docs.map(doc => ({
+                ...doc.data()
+            }));
+
+            // Calculate average rating for each shop
+            const shopsWithRatings = shopList.map(shop => {
+                const shopReviews = reviewList.filter(review => review.shopId === shop.shopID);
+                const totalRating = shopReviews.reduce((acc, review) => acc + review.rating, 0);
+                const ratingCount = shopReviews.length;
+                const averageRating = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : 0; // Calculate average rating
+
+                return {
+                    ...shop,
+                    rating: averageRating,
+                    ratingCount: ratingCount
+                };
+            });
+
+            setShops(shopsWithRatings);
+        } catch (error) {
+            console.error("Error fetching shops or reviews:", error);
+        }
     };
 
     useEffect(() => {
-        fetchShops(); // Call fetchShops when the component mounts
+        fetchShopsAndReviews(); // Call fetchShopsAndReviews when the component mounts
     }, []);
 
     const handleSearch = (e) => {
@@ -79,7 +102,7 @@ const Shops = () => {
         });
 
         // Refresh the shop list after saving
-        fetchShops();
+        fetchShopsAndReviews();
     };
 
     const handleDelete = async (shopID) => {
@@ -105,7 +128,7 @@ const Shops = () => {
             );
 
             // Refresh the shop list after deletion
-            fetchShops();
+            fetchShopsAndReviews();
         }
     };
 
@@ -160,9 +183,9 @@ const Shops = () => {
                 <table className="min-w-full text-left">
                     <thead className="bg-white text-lg sticky top-0 z-10">
                         <tr>
-                            <th className="border-b p-2 w-1/6">Shop ID</th>
-                            <th className="border-b p-2 w-1/3">Shop Name</th>
-                            <th className="border-b p-2 w-1/5">Owner</th>
+                            <th className="border-b p-2 w-1/6 text-center">Shop ID</th>
+                            <th className="border-b p-2 w-1/3 text-center">Shop Name</th>
+                            <th className="border-b p-2 w-1/5 text-center">Owner</th>
                             <th className="border-b p-2 w-1/6 text-center">Rating</th>
                             <th className="border-b p-2 w-1/6 text-center">Actions</th>
                         </tr>
@@ -180,7 +203,7 @@ const Shops = () => {
                                         <div className="text-gray-500">{shop.address}</div>
                                     </td>
                                     <td className="border p-2 text-center">{shop.owner || "N/A"}</td>
-                                    <td className="border p-2 text-center">{shop.rating || "N/A"}</td>
+                                    <td className="border p-2 text-center">★ {shop.rating || "N/A"}  <span style={{ color: 'gray' }}>({shop.ratingCount})</span></td>
                                     <td className="border p-2 text-center">
                                         <button className="text-blue-500 hover:underline" onClick={() => handleEditClick(shop)}>
                                             <FaEdit />
