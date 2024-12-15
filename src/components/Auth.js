@@ -168,11 +168,24 @@ const Auth = ({ setIsAuthenticated }) => {
             await signInWithEmailAndPassword(auth, email, password);
             const token = await auth.currentUser.getIdToken();
             localStorage.setItem('userToken', token);
-            showAlert("Login successful!", "success");
+
+            // Fetch user data to check the role
+            const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                // Show login success only for admin users
+                if (userData.role === "admin") {
+                    showAlert("Login successful!", "success");
+                }
+
+                setIsAuthenticated(true); // Mark as authenticated
+            } else {
+                throw new Error("User data not found!");
+            }
 
             // Set loading to true before updating the authentication state
             setLoading(true);
-            setIsAuthenticated(true);
         } catch (error) {
             console.error("Error logging in:", error);
             showAlert(error.message, "error");
@@ -183,6 +196,7 @@ const Auth = ({ setIsAuthenticated }) => {
             }, 1500);
         }
     };
+
 
     // Render loading or authentication forms
     if (loading) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -22,6 +22,35 @@ const MainComponent = () => {
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    const handleLogout = useCallback(
+        (showSuccess = true) => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('userToken');
+                setIsAuthenticated(false);
+
+                if (showSuccess && isAdmin) {
+                    Swal.fire({
+                        title: 'Logged out!',
+                        text: 'You have been logged out successfully.',
+                        icon: 'success',
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            }).catch((error) => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error logging you out. Please try again.',
+                    icon: 'error',
+                    position: 'top-end',
+                    showConfirmButton: true,
+                });
+            });
+        },
+        [isAdmin] // Dependency for useCallback
+    );
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -30,14 +59,24 @@ const MainComponent = () => {
                     const userData = userDoc.data();
                     setUserInfo(userData);
 
-                    // Check if the user role is admin
                     if (userData.role === 'admin') {
                         setIsAuthenticated(true);
                         setIsAdmin(true);
                     } else {
                         setIsAuthenticated(true);
                         setIsAdmin(false);
-                        triggerAutoLogout(); // Auto logout for non-admin users
+
+                        Swal.fire({
+                            title: 'Not Authorized',
+                            text: 'You do not have permission to access this application. Logging you out...',
+                            icon: 'error',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                        });
+                        setTimeout(() => {
+                            handleLogout();
+                        }, 1500);
                     }
                 } else {
                     setIsAuthenticated(false);
@@ -53,41 +92,14 @@ const MainComponent = () => {
         });
 
         return () => unsubscribe();
-    }, []);
-
-    const triggerAutoLogout = () => {
-        Swal.fire({
-            title: 'Not Authorized',
-            text: 'You do not have permission to access this application. Logging out...',
-            icon: 'error',
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 1500,
-            allowOutsideClick: false,
-        });
-
-        setTimeout(() => {
-            signOut(auth).then(() => {
-                localStorage.removeItem('userToken');
-                setIsAuthenticated(false);
-            }).catch((error) => {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'There was an error logging you out. Please try again.',
-                    icon: 'error',
-                    position: 'top-end',
-                    showConfirmButton: true,
-                });
-            });
-        }, 1500);
-    };
+    }, [handleLogout]);
 
     if (loading) {
         return <Loader />;
     }
 
     if (!isAuthenticated) {
-        return <Auth setIsAuthenticated={setIsAuthenticated} />; // Render Auth component if not authenticated
+        return <Auth setIsAuthenticated={setIsAuthenticated} />;
     }
 
     const renderPage = () => {
@@ -106,7 +118,6 @@ const MainComponent = () => {
     };
 
     if (!isAdmin) {
-        // Show a "Not Authorized" screen before logging out automatically
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100">
                 <div className="text-center">
@@ -124,6 +135,7 @@ const MainComponent = () => {
                 setActivePage={setActivePage}
                 currentPage={activePage}
                 isAuthenticated={isAuthenticated}
+                handleLogout={handleLogout}
             />
             <div className="flex flex-col flex-grow h-screen bg-gray-100">
                 <Topbar
