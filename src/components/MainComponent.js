@@ -20,6 +20,7 @@ const MainComponent = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '', role: '' });
     const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -28,23 +29,17 @@ const MainComponent = () => {
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     setUserInfo(userData);
-                    
+
                     // Check if the user role is admin
                     if (userData.role === 'admin') {
                         setIsAuthenticated(true);
+                        setIsAdmin(true);
                     } else {
-                        // If not admin, sign out and show alert
-                        await signOut(auth);
-                        Swal.fire({
-                            title: 'Access Denied',
-                            text: 'You do not have permission to access this application.',
-                            icon: 'error',
-                            confirmButtonText: 'OK',
-                        });
-                        setIsAuthenticated(false);
+                        setIsAuthenticated(true);
+                        setIsAdmin(false);
+                        triggerAutoLogout(); // Auto logout for non-admin users
                     }
                 } else {
-                    // User document does not exist
                     setIsAuthenticated(false);
                 }
             } else {
@@ -60,14 +55,14 @@ const MainComponent = () => {
         return () => unsubscribe();
     }, []);
 
-    const handleLogout = () => {
+    const triggerAutoLogout = () => {
         Swal.fire({
-            title: 'Logging out...',
-            html: 'Please wait while we log you out.',
-            didOpen: () => {
-                Swal.showLoading();
-            },
+            title: 'Not Authorized',
+            text: 'You do not have permission to access this application. Logging out...',
+            icon: 'error',
+            position: 'top-end',
             showConfirmButton: false,
+            timer: 1500,
             allowOutsideClick: false,
         });
 
@@ -75,14 +70,6 @@ const MainComponent = () => {
             signOut(auth).then(() => {
                 localStorage.removeItem('userToken');
                 setIsAuthenticated(false);
-                Swal.fire({
-                    title: 'Logged out!',
-                    text: 'You have been logged out successfully.',
-                    icon: 'success',
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                });
             }).catch((error) => {
                 Swal.fire({
                     title: 'Error!',
@@ -118,6 +105,18 @@ const MainComponent = () => {
         }
     };
 
+    if (!isAdmin) {
+        // Show a "Not Authorized" screen before logging out automatically
+        return (
+            <div className="flex items-center justify-center h-screen bg-gray-100">
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold text-red-600">NOT AUTHORIZED</h1>
+                    <p className="text-gray-700 mt-4">You do not have permission to access this application.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-screen">
             <Sidebar
@@ -125,7 +124,6 @@ const MainComponent = () => {
                 setActivePage={setActivePage}
                 currentPage={activePage}
                 isAuthenticated={isAuthenticated}
-                handleLogout={handleLogout}
             />
             <div className="flex flex-col flex-grow h-screen bg-gray-100">
                 <Topbar
